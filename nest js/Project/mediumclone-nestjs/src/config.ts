@@ -1,1 +1,0 @@
-export const JSON_WEB_TOKEN = "secret key here";
