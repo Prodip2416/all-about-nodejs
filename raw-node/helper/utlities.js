@@ -5,11 +5,10 @@ const utlities = {};
 
 utlities.parseJSON = (jsonString) => {
   let output;
-
   try {
     output = JSON.parse(jsonString);
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     output = {};
   }
 

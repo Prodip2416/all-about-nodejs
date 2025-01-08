@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { parseJSON } = require("../helper/utlities");
 
 const lib = {};
 
@@ -57,7 +58,7 @@ lib.read = (dir, file, callback) => {
       return callback(err);
     }
     try {
-      const parsedData = JSON.parse(data);
+      const parsedData = parseJSON(data);
       callback(false, parsedData);
     } catch (e) {
       callback("Error parsing file content");
