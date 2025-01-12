@@ -1,5 +1,6 @@
 const { hash, parseJSON } = require("../../helper/utlities");
 const data = require("../../lib/data");
+const tokenHandler = require("./tokenHandler");
 
 const handler = {};
 handler.userHandler = (requestProperty, callback) => {
@@ -23,14 +24,26 @@ handler._user.get = (requestProperty, callback) => {
       : null;
 
   if (phone) {
-    data.read("users", phone, (err, userData) => {
-      const user = { ...userData };
-      if (!err && userData) {
-        delete user.password;
-        callback(200, user);
+    const token =
+      typeof requestProperty.headerObject?.token === "string"
+        ? requestProperty.headerObject.token
+        : false;
+    tokenHandler._token.verify(token, phone, (tokenId) => {
+      if (tokenId) {
+        data.read("users", phone, (err, userData) => {
+          const user = { ...userData };
+          if (!err && userData) {
+            delete user.password;
+            callback(200, user);
+          } else {
+            callback(404, {
+              message: "User not found",
+            });
+          }
+        });
       } else {
-        callback(404, {
-          message: "User not found",
+        callback(401, {
+          message: "Authentication Failed!.",
         });
       }
     });
@@ -190,17 +203,28 @@ handler._user.delete = (requestProperty, callback) => {
       ? requestProperty.body.phone
       : null;
   if (phone) {
-    data.read("users", phone, (err, userData) => {
-      if (!err && userData) {
-        data.delete("users", phone, (err1) => {
-          if (!err1) {
-            callback(200, { message: "User deleted successfully." });
+    const token =
+      typeof requestProperty.headerObject?.token === "string"
+        ? requestProperty.headerObject.token
+        : false;
+
+    tokenHandler._token.verify(token, phone, (tokenId) => {
+      if (tokenId) {
+        data.read("users", phone, (err, userData) => {
+          if (!err && userData) {
+            data.delete("users", phone, (err1) => {
+              if (!err1) {
+                callback(200, { message: "User deleted successfully." });
+              } else {
+                callback(500, { error: "Could not delete the user." });
+              }
+            });
           } else {
-            callback(500, { error: "Could not delete the user." });
+            callback(404, { error: "User not found." });
           }
         });
       } else {
-        callback(404, { error: "User not found." });
+        callback(403, { error: "Authentication Failed!." });
       }
     });
   } else {

@@ -26,4 +26,16 @@ utlities.hash = (password) => {
   }
 };
 
+utlities.createRandomString = (strLen)=>{
+  if (!Number.isInteger(strLen) || strLen < 1) {
+    return false;
+  }
+  const possibleChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let randomString = "";
+  for (let i = 0; i < strLen; i++) {
+    randomString += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
+  }
+  return randomString;
+}
+
 module.exports = utlities;
