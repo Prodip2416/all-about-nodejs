@@ -1,14 +1,14 @@
-const http = require("http");
-const handleReqResponse = require("./helper/handleReqRes.js");
-const environments = require("./helper/environments");
+const server = require("./lib/server");
+const worker = require("./lib/worker");
 
 const app = {};
 
-app.createServer = () => {
-  const server = http.createServer(handleReqResponse);
-  server.listen(environments.port, () => {
-    console.log(`Server is running on port ${environments.port}`);
-  });
+app.init = () => {
+  server.init();
+
+  worker.init();
 };
 
-app.createServer();
+app.init();
+
+module.exports = app;

@@ -5,6 +5,11 @@ environments.staging = {
   envName: "staging",
   secretKey: "edqweqwe",
   maxChecks: 5,
+  twilio: {
+    fromPhone: "",
+    accountSid: "",
+    authToken: "",
+  },
 };
 
 environments.production = {
@@ -12,6 +17,11 @@ environments.production = {
   envName: "production",
   secretKey: "wwwwwwwhh",
   maxChecks: 5,
+  twilio: {
+    fromPhone: "",
+    accountSid: "",
+    authToken: "",
+  },
 };
 
 const currentEnvironment =
