@@ -9,6 +9,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
@@ -17,6 +18,7 @@ import { CreateUserDto } from './dtos/createUser.dto';
 import { UsersService } from './users.service';
 import { UserCreateValidationPipe } from './validation-pipe/UserCreateValidationPipe.pipe';
 import { AuthGuard } from './auth/auth.guard';
+import { UserInterceptor } from './interceptors/userInterceptor.interceptor';
 
 @Controller('users')
 export class UsersController {
@@ -24,7 +26,8 @@ export class UsersController {
 
   @Get()
   @UseGuards(AuthGuard)
-  getUsers(@Query('soryBy') soryBy: string) {
+  @UseInterceptors(UserInterceptor)
+  getUsers(@Query('soryBy') soryBy: string): any {
     console.log(soryBy);
     return this.userService.getUsers();
   }

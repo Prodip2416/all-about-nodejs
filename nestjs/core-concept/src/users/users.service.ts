@@ -3,9 +3,11 @@ import { CreateUserDto } from './dtos/createUser.dto';
 
 @Injectable()
 export class UsersService {
-  private _users = [{ username: 'John', email: 'John@example.com' }];
+  private _users = [
+    { username: 'John', email: 'John@example.com', password: '123456' },
+  ];
 
-  getUsers() {
+  getUsers(): any {
     return this._users;
   }
 
@@ -13,6 +15,7 @@ export class UsersService {
     this._users.push({
       username: userDeatils.username,
       email: userDeatils.email,
+      password: userDeatils.password,
     });
     return { data: userDeatils, message: 'User created successfully' };
   }

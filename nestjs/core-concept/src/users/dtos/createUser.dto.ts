@@ -9,4 +9,6 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: 'Age should not be empty' })
   age: number;
+
+  password: string;
 }
