@@ -14,6 +14,34 @@
             "username": "root",
             "connectionTimeout": 30,
             "password": "root"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "mycon",
+            "database": "nestjs_typeorm",
+            "username": "root",
+            "connectionTimeout": 30
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 3306,
+            "driver": "MySQL",
+            "name": "macbook_connect",
+            "database": "nestjs_typeorm",
+            "username": "root",
+            "password": "root"
         }
     ]
 }
