@@ -6,7 +6,7 @@ export default new DataSource({
   port: 3306,
   username: 'root',
   password: 'root',
-  database: 'test_db',
+  database: 'nestjs_typeorm',
   entities: ['dist/**/*.entity.js'],
   migrations: ['migrations/*.ts'],
 });
