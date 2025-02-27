@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Profile } from './profile.entity';
 
 @Entity('users')
 export class User {
@@ -20,12 +21,7 @@ export class User {
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
 
-  // @BeforeInsert()
-  // async hashPassword() {
-  //   if (this.password) {
-
-  //     const bcrypt = require('bcrypt');
-  //     this.password = await bcrypt.hash(this.password, 10);
-  //   }
-  // }
+  @OneToOne(()=>Profile)
+  @JoinColumn()
+  profile: Profile
 }
