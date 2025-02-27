@@ -1,0 +1,7 @@
+npm run migration:generate -- migrations/RecreateAllTables
+npm run migration:run
+
+
+
+npm run migration:create -- migrations/RecreateAllTables
+npm run migration:run
