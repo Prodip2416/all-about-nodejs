@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       migrations: [__dirname + '/migrations/*{.ts,.js}'],
       synchronize: false,
     }),
+    AuthModule,
   ],
 })
 export class AppModule {}
