@@ -3,6 +3,8 @@ import {
   Controller,
   Delete,
   Get,
+  Headers,
+  Ip,
   Param,
   Patch,
   Post,
@@ -14,15 +16,18 @@ import {
 export class UsersController {
 
   @Get(':id')
-  public getUsers(@Param() param: any, @Query() query:any): string {
-    console.log(param);
-    console.log(query);
+  public getUsers(@Param('id') id: any, @Query('limit') limit:any): string {
+    console.log(id);
+    console.log(limit);
     return 'you sent a get request for fetch all users.';
   }
   @Post()
-  public createUser(@Body() body: any, @Req() request: Request): string {
-    console.log(body);
-    console.log(request.body);
+  public createUser(@Body('email') email: any, @Req() request: Request, @Headers() headers:any,
+   @Ip() ip:any): string {
+    console.log(email);
+    console.log(headers);
+    console.log(ip);
+    // console.log(request.body);
     return 'you sent a get request for fetch all users.';
   }
   @Patch()
