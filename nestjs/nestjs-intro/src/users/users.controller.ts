@@ -6,6 +6,7 @@ import {
   Headers,
   Ip,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Query,
@@ -16,9 +17,11 @@ import {
 export class UsersController {
 
   @Get(':id')
-  public getUsers(@Param('id') id: any, @Query('limit') limit:any): string {
-    console.log(id);
-    console.log(limit);
+  public getUsers(@Param('id', ParseIntPipe) id: number, @Query('limit') limit:any): string {
+    console.log( typeof id);
+    console.log( id);
+    console.log(typeof limit);
+    console.log( limit);
     return 'you sent a get request for fetch all users.';
   }
   @Post()
