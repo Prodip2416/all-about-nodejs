@@ -14,17 +14,17 @@ import {
   Req,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUserDTO } from './users.dto';
+import { CreateUserDTO, GetUserDTO } from './users.dto';
 
 @Controller('users')
 export class UsersController {
-  @Get(':id')
+  @Get('{/:id}')
   public getUsers(
-    @Param('id', ParseIntPipe) id: number | undefined,
+    @Param() getuserDTO: GetUserDTO,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number | undefined,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number | undefined,
   ): string {
-    console.log(id);
+    console.log(getuserDTO);
     console.log(limit);
     console.log(page);
     return 'you sent a get request for fetch all users.';
