@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   Headers,
@@ -11,26 +12,28 @@ import {
   Post,
   Query,
   Req,
+  ValidationPipe,
 } from '@nestjs/common';
+import { CreateUserDTO } from './users.dto';
 
 @Controller('users')
 export class UsersController {
-
   @Get(':id')
-  public getUsers(@Param('id', ParseIntPipe) id: number, @Query('limit') limit:any): string {
-    console.log( typeof id);
-    console.log( id);
-    console.log(typeof limit);
-    console.log( limit);
+  public getUsers(
+    @Param('id', ParseIntPipe) id: number | undefined,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number | undefined,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number | undefined,
+  ): string {
+    console.log(id);
+    console.log(limit);
+    console.log(page);
     return 'you sent a get request for fetch all users.';
   }
   @Post()
-  public createUser(@Body('email') email: any, @Req() request: Request, @Headers() headers:any,
-   @Ip() ip:any): string {
-    console.log(email);
-    console.log(headers);
-    console.log(ip);
-    // console.log(request.body);
+  public createUser(
+    @Body() createUserDTO: CreateUserDTO,
+  ): string {
+    console.log(createUserDTO instanceof CreateUserDTO);
     return 'you sent a get request for fetch all users.';
   }
   @Patch()
