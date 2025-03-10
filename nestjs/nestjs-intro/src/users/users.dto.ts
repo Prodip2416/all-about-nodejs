@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { Type } from "class-transformer";
+import { IsEmail, IsInt, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+
+export class GetUserDTO {
+    @IsOptional()
+    @IsInt()
+    @Type(() => Number)
+    id?: number;
+}
 
 export class CreateUserDTO {
     @IsString()
