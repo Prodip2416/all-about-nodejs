@@ -1,4 +1,5 @@
 import { PartialType } from '@nestjs/mapped-types';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsEmail,
@@ -11,6 +12,7 @@ import {
 } from 'class-validator';
 
 export class GetUserDTO {
+  @ApiPropertyOptional()
   @IsOptional()
   @IsInt()
   @Type(() => Number)
