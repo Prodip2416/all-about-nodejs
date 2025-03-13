@@ -16,12 +16,15 @@ import {
 } from '@nestjs/common';
 import { CreateUserDTO, GetUserDTO, PatchUserDTO } from './users.dto';
 import { UserService } from './users.service';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly userService: UserService) {}
 
   @Get('{/:id}')
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'page', required: false })
   public getUsers(
     @Param() getUserDTO: GetUserDTO,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
