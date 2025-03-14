@@ -195,7 +195,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createUser(createUserDTO: <a href="../classes/CreateUserDTO.html" target="_self">CreateUserDTO</a>)</code>
+                    <code>createUser(createUserDTO: CreateUserDTO)</code>
                 </td>
             </tr>
 
@@ -209,8 +209,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">src/users/users.controller.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">src/users/users.controller.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -233,7 +233,7 @@
                                         <tr>
                                                 <td>createUserDTO</td>
                                             <td>
-                                                            <code><a href="../classes/CreateUserDTO.html" target="_self" >CreateUserDTO</a></code>
+                                                        <code>CreateUserDTO</code>
                                             </td>
 
                                             <td>
@@ -246,7 +246,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -286,8 +286,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">src/users/users.controller.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">src/users/users.controller.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -321,7 +321,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getUsers(getUserDTO: <a href="../classes/GetUserDTO.html" target="_self">GetUserDTO</a>, limit: number | undefined, page: number | undefined)</code>
+                    <code>getUsers(getUserDTO: GetUserDTO, limit: number | undefined, page: number | undefined)</code>
                 </td>
             </tr>
 
@@ -359,7 +359,7 @@
                                         <tr>
                                                 <td>getUserDTO</td>
                                             <td>
-                                                            <code><a href="../classes/GetUserDTO.html" target="_self" >GetUserDTO</a></code>
+                                                        <code>GetUserDTO</code>
                                             </td>
 
                                             <td>
@@ -422,7 +422,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateUser(patchUserDTO: <a href="../classes/PatchUserDTO.html" target="_self">PatchUserDTO</a>)</code>
+                    <code>updateUser(patchUserDTO: PatchUserDTO)</code>
                 </td>
             </tr>
 
@@ -436,8 +436,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">src/users/users.controller.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">src/users/users.controller.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -460,7 +460,7 @@
                                         <tr>
                                                 <td>patchUserDTO</td>
                                             <td>
-                                                            <code><a href="../classes/PatchUserDTO.html" target="_self" >PatchUserDTO</a></code>
+                                                        <code>PatchUserDTO</code>
                                             </td>
 
                                             <td>
@@ -473,7 +473,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/PatchUserDTO.html" target="_self" >PatchUserDTO</a></code>
+                            <b>Returns : </b>    <code>PatchUserDTO</code>
 
                         </div>
                             <div class="io-description">
@@ -503,8 +503,8 @@
   Req,
   ValidationPipe,
 } from &#x27;@nestjs/common&#x27;;
-import { CreateUserDTO, GetUserDTO, PatchUserDTO } from &#x27;./users.dto&#x27;;
-import { UserService } from &#x27;./users.service&#x27;;
+import { CreateUserDTO, GetUserDTO, PatchUserDTO } from &#x27;./dtos/users.dto&#x27;;
+import { UserService } from &#x27;./providers/users.service&#x27;;
 import { ApiQuery } from &#x27;@nestjs/swagger&#x27;;
 
 @Controller(&#x27;users&#x27;)
@@ -523,11 +523,13 @@ export class UsersController {
   ): any {
     return this.userService.findAll(getUserDTO, limit, page);
   }
+  
+  // create a new user
   @Post()
-  public createUser(@Body() createUserDTO: CreateUserDTO): string {
-    console.log(createUserDTO instanceof CreateUserDTO);
-    return &#x27;you sent a get request for fetch all users.&#x27;;
+  public createUser(@Body() createUserDTO: CreateUserDTO) {
+    return this.userService.createUser(createUserDTO);
   }
+
   @Patch(&#x27;/:id&#x27;)
   public updateUser(@Body() patchUserDTO: PatchUserDTO): PatchUserDTO {
     return patchUserDTO;

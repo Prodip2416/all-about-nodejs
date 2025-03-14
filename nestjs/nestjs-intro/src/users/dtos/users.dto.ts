@@ -24,11 +24,11 @@ export class CreateUserDTO {
   @IsNotEmpty()
   @MaxLength(100)
   @MinLength(3)
-  first_name: string;
+  firstName: string;
 
   @IsString()
   @IsOptional()
-  last_name?: string;
+  lastName?: string;
 
   @IsString()
   @IsNotEmpty()
