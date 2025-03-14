@@ -150,13 +150,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
-                                <a href="#first_name" >first_name</a>
+                                <a href="#firstName" >firstName</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
-                                <a href="#last_name" >last_name</a>
+                                <a href="#lastName" >lastName</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
@@ -225,14 +225,14 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="first_name"></a>
+                    <a name="firstName"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
-                        <span ><b>first_name</b></span>
-                        <a href="#first_name"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>firstName</b></span>
+                        <a href="#firstName"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -264,13 +264,13 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="last_name"></a>
+                    <a name="lastName"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Optional</span>
-                        <span ><b>last_name</b></span>
-                        <a href="#last_name"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>lastName</b></span>
+                        <a href="#lastName"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -374,11 +374,11 @@ export class CreateUserDTO {
   @IsNotEmpty()
   @MaxLength(100)
   @MinLength(3)
-  first_name: string;
+  firstName: string;
 
   @IsString()
   @IsOptional()
-  last_name?: string;
+  lastName?: string;
 
   @IsString()
   @IsNotEmpty()

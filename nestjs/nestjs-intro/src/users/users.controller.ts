@@ -14,8 +14,8 @@ import {
   Req,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUserDTO, GetUserDTO, PatchUserDTO } from './users.dto';
-import { UserService } from './users.service';
+import { CreateUserDTO, GetUserDTO, PatchUserDTO } from './dtos/users.dto';
+import { UserService } from './providers/users.service';
 import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('users')
@@ -34,11 +34,13 @@ export class UsersController {
   ): any {
     return this.userService.findAll(getUserDTO, limit, page);
   }
+  
+  // create a new user
   @Post()
-  public createUser(@Body() createUserDTO: CreateUserDTO): string {
-    console.log(createUserDTO instanceof CreateUserDTO);
-    return 'you sent a get request for fetch all users.';
+  public createUser(@Body() createUserDTO: CreateUserDTO) {
+    return this.userService.createUser(createUserDTO);
   }
+
   @Patch('/:id')
   public updateUser(@Body() patchUserDTO: PatchUserDTO): PatchUserDTO {
     return patchUserDTO;
