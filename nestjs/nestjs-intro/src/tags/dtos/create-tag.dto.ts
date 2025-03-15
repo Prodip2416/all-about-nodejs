@@ -36,11 +36,11 @@ export class CreateTagDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsJSON()
-  schema: string;
+  schema?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsUrl()
   @MaxLength(1024)
-  featuredImage: string;
+  featuredImage?: string;
 }

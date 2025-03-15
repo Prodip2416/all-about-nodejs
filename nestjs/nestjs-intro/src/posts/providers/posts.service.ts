@@ -5,6 +5,8 @@ import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
+import { TagsService } from 'src/tags/providers/tags.service';
+import { PatchPostDto } from '../dtos/patch-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -25,6 +27,7 @@ export class PostsService {
      */
     @InjectRepository(MetaOption)
     private readonly metaOptionsRepository: Repository<MetaOption>,
+    private readonly tagService: TagsService,
   ) {}
 
   /**
@@ -40,51 +43,100 @@ export class PostsService {
     //   await this.metaOptionsRepository.save(metaOptions);
     // }
 
-    // Create the post
-    let post = this.postsRepository.create({
-      title: createPostDto.title,
-      postType: createPostDto.postType,
-      slug: createPostDto.slug,
-      status: createPostDto.status,
-      content: createPostDto.content,
-      schema: createPostDto.schema,
-      featuredImageUrl: createPostDto.featuredImageUrl,
-      publishOn: createPostDto.publishOn,
-      tags: createPostDto.tags,
-      metaOptions: createPostDto.metaOptions
-        ? this.metaOptionsRepository.create(createPostDto.metaOptions)
-        : undefined,
-    });
+    const author = await this.usersService.findOneById(createPostDto.authorId);
+    let findTags;
+    if (createPostDto.tags) {
+      findTags = await this.tagService.getMultipleTags(createPostDto.tags);
+    }
 
-    // If meta options exist add them to post
-    // if (metaOptions) {
-    //   post.metaOptions = metaOptions;
-    // }
+    if (author) {
+      // Create the post
+      let post = this.postsRepository.create({
+        title: createPostDto.title,
+        postType: createPostDto.postType,
+        slug: createPostDto.slug,
+        status: createPostDto.status,
+        content: createPostDto.content,
+        schema: createPostDto.schema,
+        featuredImageUrl: createPostDto.featuredImageUrl,
+        publishOn: createPostDto.publishOn,
+        tags: findTags,
+        metaOptions: createPostDto.metaOptions
+          ? this.metaOptionsRepository.create(createPostDto.metaOptions)
+          : undefined,
+        author: author,
+      });
 
-    return await this.postsRepository.save(post);
+      // If meta options exist add them to post
+      // if (metaOptions) {
+      //   post.metaOptions = metaOptions;
+      // }
+
+      return await this.postsRepository.save(post);
+    }
   }
 
   public async findAll(userId: string) {
-    const user = this.usersService.findOneById(userId);
+    // const user = this.usersService.findOneById(userId);
 
     // return this.postsRepository.find({ relations:{
     //   metaOptions: true,
     // }});
-    return this.postsRepository.find(); // when eager is true
+    return this.postsRepository.find({
+      relations: {
+        metaOptions: true,
+        author: true,
+        tags: true,
+      },
+    }); // when eager is true
+    // return this.metaOptionsRepository.find({
+    //   // Bi-directional relationship both side are working
+    //   relations: {
+    //     post: true,
+    //   },
+    // });
   }
 
-  public async delete(id:number){
-    const post = await this.postsRepository.findOneBy({id});
-    if(post){
-      await this.postsRepository.delete(post.id);
+  public async update(patchPostDTO: PatchPostDto) {
+    let findTags;
+    if (patchPostDTO.tags) {
+      findTags = await this.tagService.getMultipleTags(patchPostDTO.tags);
     }
+    let post = await this.postsRepository.findOneBy({
+      id: patchPostDTO.id,
+    });
 
-    if(post?.metaOptions){
-      await this.metaOptionsRepository.delete(post.metaOptions.id);
-    }
+    post.title = patchPostDTO.title ?? post.title;
+    post.postType = patchPostDTO.postType ?? post.postType;
+    post.slug = patchPostDTO.slug ?? post.slug;
+    post.status = patchPostDTO.status ?? post.status;
+    post.content = patchPostDTO.content ?? post.content;
+    post.schema = patchPostDTO.schema ?? post.schema;
+    post.featuredImageUrl =
+      patchPostDTO.featuredImageUrl ?? post.featuredImageUrl;
+    post.publishOn = patchPostDTO.publishOn ?? post.publishOn;
+    post.tags = findTags ?? post.tags;
 
-    return {
-      deleted : true, deletedId: id
-    }
+    return await this.postsRepository.save(post);
+  }
+
+  public async delete(id: number) {
+    // const post = await this.postsRepository.findOneBy({id});
+    // if(post){
+    //   await this.postsRepository.delete(post.id);
+    // }
+
+    // if(post?.metaOptions){
+    //   await this.metaOptionsRepository.delete(post.metaOptions.id);
+    // }
+
+    // return {
+    //   deleted : true, deletedId: id
+    // }
+
+    // Bi-directional relationship
+    await this.postsRepository.delete(id);
+
+    return { deleted: true, id };
   }
 }
