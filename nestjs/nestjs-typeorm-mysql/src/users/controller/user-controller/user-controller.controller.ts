@@ -18,7 +18,7 @@ export class UserControllerController {
   getUser() {
     return this.userService.getAllUsers();
   }
-
+//helllo mackbook its fucking bullshit now
   @Get()
   getUserById(@Param('id', ParseIntPipe) id: number) {
     return this.userService.getById(id);
