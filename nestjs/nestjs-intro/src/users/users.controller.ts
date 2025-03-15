@@ -1,52 +1,71 @@
 import {
-  Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
-  Headers,
-  Ip,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
+  Put,
   Query,
-  Req,
+  Body,
+  Headers,
+  Ip,
+  ParseIntPipe,
+  DefaultValuePipe,
   ValidationPipe,
 } from '@nestjs/common';
-import { CreateUserDTO, GetUserDTO, PatchUserDTO } from './dtos/users.dto';
-import { UserService } from './providers/users.service';
-import { ApiQuery } from '@nestjs/swagger';
+import { CreateUserDto } from './dtos/create-user.dto';
+import { GetUsersParamDto } from './dtos/get-users-param.dto';
+import { PatchUserDto } from './dtos/patch-user.dto';
+import { UsersService } from './providers/users.service';
+import { ApiTags, ApiQuery, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('users')
+@ApiTags('Users')
 export class UsersController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    // Injecting Users Service
+    private readonly usersService: UsersService,
+  ) {}
 
   @Get('{/:id}')
-  @ApiQuery({ name: 'limit', required: false })
-  @ApiQuery({ name: 'page', required: false })
+  @ApiOperation({
+    summary: 'Fetches a list of registered users on the application',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Users fetched successfully based on the query',
+  })
+  @ApiQuery({
+    name: 'limit',
+    type: 'number',
+    required: false,
+    description: 'The number of entries returned per query',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    required: false,
+    description:
+      'The position of the page number that you want the API to return',
+    example: 1,
+  })
   public getUsers(
-    @Param() getUserDTO: GetUserDTO,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe)
-    limit: number | undefined,
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe)
-    page: number | undefined,
-  ): any {
-    return this.userService.findAll(getUserDTO, limit, page);
-  }
-  
-  // create a new user
-  @Post()
-  public createUser(@Body() createUserDTO: CreateUserDTO) {
-    return this.userService.createUser(createUserDTO);
+    @Param() getUserParamDto: GetUsersParamDto,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+  ) {
+    return this.usersService.findAll(getUserParamDto, limit, page);
   }
 
-  @Patch('/:id')
-  public updateUser(@Body() patchUserDTO: PatchUserDTO): PatchUserDTO {
-    return patchUserDTO;
+  @Post()
+  public createUser(@Body() createUserDto: CreateUserDto) {
+    return this.usersService.createUser(createUserDto);
   }
-  @Delete()
-  public deleteUser(): string {
-    return 'you sent a get request for fetch all users.';
+
+  @Patch()
+  public patchUser(@Body() patchUserDto: PatchUserDto) {
+    return patchUserDto;
   }
 }
