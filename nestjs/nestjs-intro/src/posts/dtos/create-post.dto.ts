@@ -2,8 +2,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsArray,
   IsEnum,
-  IsInt,
   IsISO8601,
+  IsInt,
   IsJSON,
   IsNotEmpty,
   IsOptional,
@@ -15,10 +15,11 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
+
+import { CreatePostMetaOptionsDto } from '../../meta-options/dtos/create-post-meta-options.dto';
 import { Type } from 'class-transformer';
-import { postType } from '../enums/postType.enum';
 import { postStatus } from '../enums/postStatus.enum';
-import { CreatePostMetaOptionsDto } from 'src/meta-options/dtos/create-post-meta-options.dto';
+import { postType } from '../enums/postType.enum';
 
 export class CreatePostDto {
   @ApiProperty({
@@ -98,32 +99,39 @@ export class CreatePostDto {
   publishOn?: Date;
 
   @ApiPropertyOptional({
-    type: CreatePostMetaOptionsDto,
-    description: 'Custom meta options for the post',
-    example: { metaValue: '{"sidebarEnabled": true}' },
-  })
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => CreatePostMetaOptionsDto)
-  metaOptions?: CreatePostMetaOptionsDto | null;
-
-  @ApiPropertyOptional({
-    type: 'number',
-    description: 'Custom meta options for the post',
-    example: 1,
-  })
-  @IsNotEmpty()
-  @IsInt()
-  authorId: number;
-  
-
-  @ApiPropertyOptional({
-    description: 'Array of ids of tags',
-    example: [1,2],
+    description: 'Array of ids of tags passed as integers in an array',
+    example: [1, 2],
   })
   @IsOptional()
   @IsArray()
   @IsInt({ each: true })
   tags?: number[];
 
+  @ApiPropertyOptional({
+    type: 'object',
+    required: false,
+    items: {
+      type: 'object',
+      properties: {
+        metavalue: {
+          type: 'json',
+          description: 'The metaValue is a JSON string',
+          example: '{"sidebarEnabled": true,}',
+        },
+      },
+    },
+  })
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreatePostMetaOptionsDto)
+  metaOptions?: CreatePostMetaOptionsDto | null;
+
+  @ApiProperty({
+    type: 'integer',
+    required: true,
+    example: 1,
+  })
+  @IsNotEmpty()
+  @IsInt()
+  authorId: number;
 }

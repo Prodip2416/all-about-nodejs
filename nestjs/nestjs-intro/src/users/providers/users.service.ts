@@ -11,6 +11,8 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AuthService } from 'src/auth/providers/auth.service';
+import { ConfigType } from '@nestjs/config';
+import profileConfig from '../config/profile.config';
 
 /**
  * Controller class for '/users' API endpoint
@@ -27,6 +29,10 @@ export class UsersService {
     // Injecting Auth Service
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
+
+    // Injecting ConfigService
+    @Inject(profileConfig.KEY)
+    private readonly profileConfiguration: ConfigType<typeof profileConfig>,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -56,6 +62,9 @@ export class UsersService {
     limt: number,
     page: number,
   ) {
+    // Testing profileConfiguration
+    console.log(this.profileConfiguration);
+    console.log(this.profileConfiguration.apiKey);
     return [
       {
         firstName: 'John',
@@ -71,7 +80,9 @@ export class UsersService {
   /**
    * Public method used to find one user using the ID of the user
    */
-  public findOneById(id: number) {
-    return this.usersRepository.findOneBy({ id });
+  public async findOneById(id: number) {
+    return await this.usersRepository.findOneBy({
+      id,
+    });
   }
 }
