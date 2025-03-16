@@ -1,7 +1,7 @@
 import { PatchPostDto } from './../dtos/patch-post.dto';
 import { TagsService } from './../../tags/providers/tags.service';
 import { CreatePostDto } from '../dtos/create-post.dto';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
@@ -79,6 +79,7 @@ export class PostsService {
    */
   public async update(patchPostDto: PatchPostDto) {
     // Find new tags
+
     let tags = await this.tagsService.findMultipleTags(patchPostDto.tags);
 
     // Update the post
@@ -86,6 +87,9 @@ export class PostsService {
       id: patchPostDto.id,
     });
 
+    if (!post) {
+      throw new BadRequestException('Post not found');
+    }
     // Update the tags
     post.tags = tags;
 

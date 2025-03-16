@@ -41,15 +41,18 @@ export class UsersService {
       where: { email: createUserDto.email },
     });
 
-    /**
-     * Handle exceptions if user exists later
-     * */
+    if (existingUser) {
+      throw new BadRequestException(
+        'This User already exit, please check email!.',
+      );
+    }
 
-    // Try to create a new user
-    // - Handle Exceptions Later
     let newUser = this.usersRepository.create(createUserDto);
-    newUser = await this.usersRepository.save(newUser);
-
+    try {
+      newUser = await this.usersRepository.save(newUser);
+    } catch (error) {
+      throw new InternalServerErrorException('Error while creating user');
+    }
     // Create the user
     return newUser;
   }
@@ -81,8 +84,17 @@ export class UsersService {
    * Public method used to find one user using the ID of the user
    */
   public async findOneById(id: number) {
-    return await this.usersRepository.findOneBy({
-      id,
-    });
+    let user = undefined;
+    try {
+      user = await this.usersRepository.findOneBy({
+        id,
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Error while fetching user');
+    }
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+    return user;
   }
 }

@@ -28,7 +28,7 @@ export class UsersController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Get('/:id?')
+  @Get('/:id')
   @ApiOperation({
     summary: 'Fetches a list of registered users on the application',
   })
@@ -52,11 +52,11 @@ export class UsersController {
     example: 1,
   })
   public getUsers(
-    @Param() getUserParamDto: GetUsersParamDto,
+    @Param('id', ParseIntPipe) id: number,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
   ) {
-    return this.usersService.findAll(getUserParamDto, limit, page);
+    return this.usersService.findOneById(id);
   }
 
   @Post()
