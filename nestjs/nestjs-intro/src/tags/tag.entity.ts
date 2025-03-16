@@ -3,14 +3,17 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+import { Post } from 'src/posts/post.entity';
+
 @Entity()
 export class Tag {
   @PrimaryGeneratedColumn()
-  id: string;
+  id: number;
 
   @Column({
     type: 'varchar',
@@ -38,16 +41,28 @@ export class Tag {
     type: 'text',
     nullable: true,
   })
-  schema?: string;
+  schema: string;
 
   @Column({
     type: 'varchar',
     length: 1024,
     nullable: true,
   })
-  featuredImage?: string;
+  featuredImage: string;
+
+  @ManyToMany(() => Post, (post) => post.tags, {
+    onDelete: 'CASCADE',
+  })
+  posts: Post[];
 
   // https://orkhan.gitbook.io/typeorm/docs/decorator-reference
   @CreateDateColumn()
   createDate: Date;
+
+  @UpdateDateColumn()
+  updateDate: Date;
+
+  // Add this decorartor and column enables soft delete
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

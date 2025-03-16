@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './providers/posts.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -26,7 +27,7 @@ export class PostsController {
   /*
    * GET localhost:3000/posts/:userId
    */
-  @Get('{/:userId}')
+  @Get('/:userId?')
   public getPosts(@Param('userId') userId: string) {
     return this.postsService.findAll(userId);
   }
@@ -55,8 +56,11 @@ export class PostsController {
     return this.postsService.update(patchPostsDto);
   }
 
-  @Delete(':id')
-  public deletePost(@Param('id', ParseIntPipe) id: number) {
+  /**
+   * Route to delete a post
+   */
+  @Delete()
+  public deletePost(@Query('id', ParseIntPipe) id: number) {
     return this.postsService.delete(id);
   }
 }

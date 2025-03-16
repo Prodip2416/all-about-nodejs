@@ -1,25 +1,49 @@
+import { In, Repository } from 'typeorm';
+import { CreateTagDto } from '../dtos/create-tag.dto';
 import { Injectable } from '@nestjs/common';
 import { Tag } from '../tag.entity';
-import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTagDto } from '../dtos/create-tag.dto';
 
 @Injectable()
 export class TagsService {
   constructor(
+    /**
+     * Inject tagsRepository
+     */
     @InjectRepository(Tag)
-    private tagsRepository: Repository<Tag>,
+    private readonly tagsRepository: Repository<Tag>,
   ) {}
 
-  public async create(createTagDTO: CreateTagDto) {
-    let newTag = this.tagsRepository.create(createTagDTO);
-    return await this.tagsRepository.save(newTag);
+  public async create(createTagDto: CreateTagDto) {
+    let tag = this.tagsRepository.create(createTagDto);
+    return await this.tagsRepository.save(tag);
   }
-  public async getMultipleTags(tags: number[]) {
-    return await this.tagsRepository.find({
+
+  public async findMultipleTags(tags: number[]) {
+    let results = await this.tagsRepository.find({
       where: {
         id: In(tags),
       },
     });
+
+    return results;
+  }
+
+  public async delete(id: number) {
+    await this.tagsRepository.delete(id);
+
+    return {
+      deleted: true,
+      id,
+    };
+  }
+
+  public async softRemove(id: number) {
+    await this.tagsRepository.softDelete(id);
+
+    return {
+      softDeleted: true,
+      id,
+    };
   }
 }
