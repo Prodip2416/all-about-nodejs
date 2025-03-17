@@ -13,6 +13,7 @@ import { PostsService } from './providers/posts.service';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { PatchPostDto } from './dtos/patch-post.dto';
+import { GetPostDTO } from './dtos/get-post-dto.dto';
 
 @Controller('posts')
 @ApiTags('Posts')
@@ -25,11 +26,12 @@ export class PostsController {
   ) {}
 
   /*
-   * GET localhost:3000/posts/:userId
+   * GET /posts?page=1&limit=10&startDate=2025-03-17&endDate=2025-03-17
    */
-  @Get('/:userId?')
-  public getPosts(@Param('userId') userId: string) {
-    return this.postsService.findAll(userId);
+  @Get('{/:userId}')
+  public getPosts(@Query() getPostDTO: GetPostDTO) {
+    // console.log(getPostDTO);
+    return this.postsService.findAll(getPostDTO);
   }
 
   @ApiOperation({
@@ -56,11 +58,8 @@ export class PostsController {
     return this.postsService.update(patchPostsDto);
   }
 
-  /**
-   * Route to delete a post
-   */
-  @Delete()
-  public deletePost(@Query('id', ParseIntPipe) id: number) {
+  @Delete(':id')
+  public deletePost(@Param('id', ParseIntPipe) id: number) {
     return this.postsService.delete(id);
   }
 }

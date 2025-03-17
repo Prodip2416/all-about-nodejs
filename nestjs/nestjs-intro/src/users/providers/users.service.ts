@@ -7,12 +7,11 @@ import {
   forwardRef,
 } from '@nestjs/common';
 import { User } from '../user.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AuthService } from 'src/auth/providers/auth.service';
-import { ConfigType } from '@nestjs/config';
-import profileConfig from '../config/profile.config';
+import { ConfigService } from '@nestjs/config';
 
 /**
  * Controller class for '/users' API endpoint
@@ -29,10 +28,9 @@ export class UsersService {
     // Injecting Auth Service
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
-
-    // Injecting ConfigService
-    @Inject(profileConfig.KEY)
-    private readonly profileConfiguration: ConfigType<typeof profileConfig>,
+    // config service inject
+    private readonly configServie: ConfigService,
+    private readonly datasource: DataSource,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -40,19 +38,18 @@ export class UsersService {
     const existingUser = await this.usersRepository.findOne({
       where: { email: createUserDto.email },
     });
-
     if (existingUser) {
-      throw new BadRequestException(
-        'This User already exit, please check email!.',
-      );
+      throw new BadRequestException('User with this email already exists');
     }
 
-    let newUser = this.usersRepository.create(createUserDto);
+    let newUser = undefined;
     try {
+      newUser = this.usersRepository.create(createUserDto);
       newUser = await this.usersRepository.save(newUser);
     } catch (error) {
       throw new InternalServerErrorException('Error while creating user');
     }
+
     // Create the user
     return newUser;
   }
@@ -65,9 +62,7 @@ export class UsersService {
     limt: number,
     page: number,
   ) {
-    // Testing profileConfiguration
-    console.log(this.profileConfiguration);
-    console.log(this.profileConfiguration.apiKey);
+    console.log(this.configServie.get<string>('DB_NAME'));
     return [
       {
         firstName: 'John',
@@ -83,18 +78,35 @@ export class UsersService {
   /**
    * Public method used to find one user using the ID of the user
    */
-  public async findOneById(id: number) {
-    let user = undefined;
+  public findOneById(id: number) {
+    return this.usersRepository.findOneBy({ id });
+  }
+
+  public async createMany(createUserDTO: CreateUserDto[]) {
+    const users: User[] = [];
+    // Create query runner instance
+    const queryRunner = this.datasource.createQueryRunner();
+    // Create Query Runner to Datasource
+    await queryRunner.connect();
+    // Start transaction
+    await queryRunner.startTransaction();
     try {
-      user = await this.usersRepository.findOneBy({
-        id,
-      });
+      for (const user of createUserDTO) {
+        const newUser = queryRunner.manager.create(User, user);
+        const result = await queryRunner.manager.save(newUser);
+        users.push(result);
+      }
+      // If success, commit transaction
+      await queryRunner.commitTransaction();
     } catch (error) {
-      throw new InternalServerErrorException('Error while fetching user');
+      // If error, rollback transaction
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException('Error while creating users');
+    } finally {
+      // release query runner
+      await queryRunner.release();
     }
-    if (!user) {
-      throw new BadRequestException('User not found');
-    }
-    return user;
+
+    return users;
   }
 }
