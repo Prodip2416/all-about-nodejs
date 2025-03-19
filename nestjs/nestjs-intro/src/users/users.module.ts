@@ -7,11 +7,19 @@ import { UsersController } from './users.controller';
 import { UsersService } from './providers/users.service';
 import { UsersCreateManyService } from './providers/usersCreateMany.service';
 import { CreateUserProvider } from './providers/createUser.service';
+import { ConfigModule } from '@nestjs/config';
+import jwtConfig from 'src/config/jwt.config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [UsersController],
   providers: [UsersService, UsersCreateManyService, CreateUserProvider],
   exports: [UsersService],
-  imports: [TypeOrmModule.forFeature([User]), forwardRef(() => AuthModule)],
+  imports: [
+    TypeOrmModule.forFeature([User]),
+    forwardRef(() => AuthModule),
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
+  ],
 })
 export class UsersModule {}
