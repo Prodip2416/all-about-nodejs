@@ -12,6 +12,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { AuthService } from 'src/auth/providers/auth.service';
 import { ConfigService } from '@nestjs/config';
+import { CreateUserProvider } from './createUser.service';
+import { SignInDTO } from '../dtos/sign-in.dto';
 
 /**
  * Controller class for '/users' API endpoint
@@ -31,27 +33,15 @@ export class UsersService {
     // config service inject
     private readonly configServie: ConfigService,
     private readonly datasource: DataSource,
+    private readonly createUserService: CreateUserProvider,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
-    // Check if user with email exists
-    const existingUser = await this.usersRepository.findOne({
-      where: { email: createUserDto.email },
-    });
-    if (existingUser) {
-      throw new BadRequestException('User with this email already exists');
-    }
+    return this.createUserService.createUser(createUserDto);
+  }
 
-    let newUser = undefined;
-    try {
-      newUser = this.usersRepository.create(createUserDto);
-      newUser = await this.usersRepository.save(newUser);
-    } catch (error) {
-      throw new InternalServerErrorException('Error while creating user');
-    }
-
-    // Create the user
-    return newUser;
+  public findOneByEmail(signInDTO: SignInDTO) {
+    return this.createUserService.findOneByEmail(signInDTO);
   }
 
   /**
