@@ -3,6 +3,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  RequestTimeoutException,
 } from '@nestjs/common';
 import { UsersService } from 'src/users/providers/users.service';
 import { Repository } from 'typeorm';
@@ -14,6 +15,7 @@ import { PatchPostDto } from '../dtos/patch-post.dto';
 import { GetPostDTO } from '../dtos/get-post-dto.dto';
 import { PaginationProvider } from 'src/common/pagination/providers/pagination.service';
 import { Paginated } from 'src/common/pagination/interfaces/paginated.interface';
+import { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Injectable()
 export class PostsService {
@@ -30,7 +32,9 @@ export class PostsService {
   /**
    * Method to create a new post
    */
-  public async create(createPostDto: CreatePostDto) {
+  public async create(createPostDto: CreatePostDto, user: ActiveUserData) {
+    let findTags = [];
+    let postData = undefined;
     const postExists = await this.postsRepository.findOneBy({
       slug: createPostDto.slug,
     });
@@ -38,12 +42,11 @@ export class PostsService {
       throw new BadRequestException('Post with this slug already exists');
     }
 
-    const author = await this.usersService.findOneById(createPostDto.authorId);
+    const author = await this.usersService.findOneById(user.sub);
     if (!author) {
       throw new BadRequestException('Author not found!');
     }
 
-    let findTags = [];
     if (createPostDto.tags.length > 0) {
       findTags = await this.tagService.getMultipleTags(createPostDto.tags);
       if (findTags.length !== createPostDto.tags.length) {
@@ -69,7 +72,13 @@ export class PostsService {
         tags: findTags,
       });
 
-      return await this.postsRepository.save(post);
+      try {
+        postData = await this.postsRepository.save(post);
+      } catch (error) {
+        throw new RequestTimeoutException('Error while saving post');
+      }
+
+      return postData;
     }
   }
 

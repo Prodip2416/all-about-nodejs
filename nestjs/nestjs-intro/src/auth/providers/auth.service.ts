@@ -11,6 +11,7 @@ import { HashingProvider } from './hashing.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigType } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
+import { ActiveUserData } from '../interfaces/active-user-data.interface';
 
 @Injectable()
 export class AuthService {
@@ -47,7 +48,7 @@ export class AuthService {
       {
         sub: user.id,
         email: user.email,
-      },
+      } as ActiveUserData,
       {
         secret: this.jwtConfiguration.secret,
         audience: this.jwtConfiguration.audience,

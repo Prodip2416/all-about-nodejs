@@ -14,7 +14,8 @@ import databaseConfig from './config/database.config';
 import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
-import { AccessTokenGuard } from './auth/guard/access-token.guard';
+import { AccessTokenGuard } from './auth/guard/access-token/access-token.guard';
+import { AuthenticationGuard } from './auth/guard/authentication/authentication.guard';
 
 const env = process.env.NODE_ENV;
 @Module({
@@ -50,10 +51,11 @@ const env = process.env.NODE_ENV;
   controllers: [AppController],
   providers: [
     AppService,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AccessTokenGuard, // use full application guard
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: AuthenticationGuard, // use full application guard
+    },
+    AccessTokenGuard,
   ],
 })
 export class AppModule {}

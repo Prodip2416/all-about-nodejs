@@ -108,15 +108,6 @@ export class CreatePostDto {
   metaOptions?: CreatePostMetaOptionsDto | null;
 
   @ApiPropertyOptional({
-    type: 'number',
-    description: 'Custom meta options for the post',
-    example: 1,
-  })
-  @IsNotEmpty()
-  @IsInt()
-  authorId: number;
-
-  @ApiPropertyOptional({
     description: 'Array of ids of tags',
     example: [1, 2],
   })
