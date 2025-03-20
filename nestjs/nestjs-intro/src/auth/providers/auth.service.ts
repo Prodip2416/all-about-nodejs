@@ -8,10 +8,10 @@ import { SignInDTO } from 'src/users/dtos/sign-in.dto';
 
 import { UsersService } from 'src/users/providers/users.service';
 import { HashingProvider } from './hashing.service';
-import { JwtService } from '@nestjs/jwt';
-import { ConfigType } from '@nestjs/config';
-import jwtConfig from 'src/config/jwt.config';
-import { ActiveUserData } from '../interfaces/active-user-data.interface';
+import { User } from 'src/users/user.entity';
+import { GenerateTokensProvider } from './generate-tokens.provider';
+import { RefreshTokenDTO } from '../dtos/refresh-token-dto.dto';
+import { RefreshTokensProvider } from './refresh-tokens.provider';
 
 @Injectable()
 export class AuthService {
@@ -20,13 +20,16 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
     private readonly hashingProvider: HashingProvider,
-    private readonly jwtService: JwtService,
-    @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+    private readonly generateTokensProvider: GenerateTokensProvider,
+    private readonly refreshTokensProvider: RefreshTokensProvider,
   ) {}
 
+  public async refreshTokens(refreshTokenDto: RefreshTokenDTO) {
+    return await this.refreshTokensProvider.refreshTokens(refreshTokenDto);
+  }
+
   public async login(signInDTO: SignInDTO) {
-    const user = await this.usersService.findOneByEmail(signInDTO);
+    const user: User = await this.usersService.findOneByEmail(signInDTO);
 
     let isEqual: boolean = false;
     try {
@@ -44,22 +47,24 @@ export class AuthService {
       );
     }
 
-    const accessToken = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        email: user.email,
-      } as ActiveUserData,
-      {
-        secret: this.jwtConfiguration.secret,
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-        expiresIn: this.jwtConfiguration.accessTokenTtl,
-      },
-    );
+    // const accessToken = await this.jwtService.signAsync(
+    //   {
+    //     sub: user.id,
+    //     email: user.email,
+    //   } as ActiveUserData,
+    //   {
+    //     secret: this.jwtConfiguration.secret,
+    //     audience: this.jwtConfiguration.audience,
+    //     issuer: this.jwtConfiguration.issuer,
+    //     expiresIn: this.jwtConfiguration.accessTokenTtl,
+    //   },
+    // );
 
-    return {
-      accessToken,
-    };
+    // return {
+    //   accessToken,
+    // };
+
+    return await this.generateTokensProvider.generateTokens(user);
   }
 
   public isAuth() {
