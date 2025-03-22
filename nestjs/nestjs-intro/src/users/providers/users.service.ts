@@ -14,6 +14,7 @@ import { AuthService } from 'src/auth/providers/auth.service';
 import { ConfigService } from '@nestjs/config';
 import { CreateUserProvider } from './createUser.service';
 import { SignInDTO } from '../dtos/sign-in.dto';
+import { FindOneByGoogleIdProvidersService } from './find-one-by-google-id.providers.service';
 
 /**
  * Controller class for '/users' API endpoint
@@ -34,6 +35,7 @@ export class UsersService {
     private readonly configServie: ConfigService,
     private readonly datasource: DataSource,
     private readonly createUserService: CreateUserProvider,
+    private readonly findOneByGoogleIdProvidersService: FindOneByGoogleIdProvidersService 
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -98,5 +100,9 @@ export class UsersService {
     }
 
     return users;
+  }
+
+  public async findOneByGoogleId(googleId: string) {
+    return await this.findOneByGoogleIdProvidersService.findOneByGoogleId(googleId);
   }
 }
