@@ -11,10 +11,17 @@ import { ConfigModule } from '@nestjs/config';
 import jwtConfig from 'src/config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
 import { FindOneByGoogleIdProvidersService } from './providers/find-one-by-google-id.providers.service';
+import { CreateGoogleUserProvider } from './providers/create-google-user.provider';
 
 @Module({
   controllers: [UsersController],
-  providers: [UsersService, UsersCreateManyService, CreateUserProvider, FindOneByGoogleIdProvidersService],
+  providers: [
+    UsersService,
+    UsersCreateManyService,
+    CreateUserProvider,
+    FindOneByGoogleIdProvidersService,
+    CreateGoogleUserProvider,
+  ],
   exports: [UsersService],
   imports: [
     TypeOrmModule.forFeature([User]),

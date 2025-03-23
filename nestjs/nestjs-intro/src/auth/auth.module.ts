@@ -30,6 +30,11 @@ import { GoogleAuthenticationService } from './social/providers/google-authentic
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
   ],
-  exports: [AuthService, HashingProvider],
+  exports: [
+    AuthService,
+    HashingProvider,
+    GenerateTokensProvider,
+    RefreshTokensProvider,
+  ],
 })
 export class AuthModule {}

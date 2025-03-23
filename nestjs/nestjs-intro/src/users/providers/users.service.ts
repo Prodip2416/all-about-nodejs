@@ -15,6 +15,8 @@ import { ConfigService } from '@nestjs/config';
 import { CreateUserProvider } from './createUser.service';
 import { SignInDTO } from '../dtos/sign-in.dto';
 import { FindOneByGoogleIdProvidersService } from './find-one-by-google-id.providers.service';
+import { GoogleUser } from '../interfaces/google-user.inerface';
+import { CreateGoogleUserProvider } from './create-google-user.provider';
 
 /**
  * Controller class for '/users' API endpoint
@@ -35,7 +37,8 @@ export class UsersService {
     private readonly configServie: ConfigService,
     private readonly datasource: DataSource,
     private readonly createUserService: CreateUserProvider,
-    private readonly findOneByGoogleIdProvidersService: FindOneByGoogleIdProvidersService 
+    private readonly findOneByGoogleIdProvidersService: FindOneByGoogleIdProvidersService,
+    private readonly createGooogleUserProvider: CreateGoogleUserProvider,
   ) {}
 
   public async createUser(createUserDto: CreateUserDto) {
@@ -103,6 +106,11 @@ export class UsersService {
   }
 
   public async findOneByGoogleId(googleId: string) {
-    return await this.findOneByGoogleIdProvidersService.findOneByGoogleId(googleId);
+    return await this.findOneByGoogleIdProvidersService.findOneByGoogleId(
+      googleId,
+    );
+  }
+  public async createGoogleUser(googleUser: GoogleUser) {
+    return await this.createGooogleUserProvider.createGoogleUser(googleUser);
   }
 }

@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  OnModuleInit,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { ConfigType } from '@nestjs/config';
 import { OAuth2Client } from 'google-auth-library';
 import jwtConfig from 'src/config/jwt.config';
@@ -14,7 +20,7 @@ export class GoogleAuthenticationService implements OnModuleInit {
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
 
-    @Inject(forwardRef)
+    @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
 
     private readonly generateTokenProvider: GenerateTokensProvider,
@@ -26,19 +32,33 @@ export class GoogleAuthenticationService implements OnModuleInit {
   }
 
   public async authenticate(googleTokenDTO: GoogleTokenDTO) {
-    const loginTicket = await this.oAuthClient.verifyIdToken({
+    try {
+      const loginTicket = await this.oAuthClient.verifyIdToken({
         idToken: googleTokenDTO.token,
-    });
+      });
+      // console.log('loginTicket: ', loginTicket);
+      const {
+        email,
+        sub: googleId,
+        given_name: firstName,
+        family_name: lastName,
+      } = loginTicket.getPayload();
 
-    const {email, sub:googleId} = loginTicket.getPayload();
-
-    const user = await this.userService.findOneByGoogleId(googleId);
-
-    if(user){
+      const user = await this.userService.findOneByGoogleId(googleId);
+      // console.log('User:', user);
+      if (user) {
         return this.generateTokenProvider.generateTokens(user);
-    }else{
-
+      } else {
+        const newUser = await this.userService.createGoogleUser({
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          googleId: googleId,
+        });
+        return await this.generateTokenProvider.generateTokens(newUser);
+      }
+    } catch (error) {
+      throw new RequestTimeoutException('Could not authenticate user!');
     }
   }
-
 }
