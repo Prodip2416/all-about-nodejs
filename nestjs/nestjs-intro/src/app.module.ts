@@ -17,10 +17,17 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { AccessTokenGuard } from './auth/guard/access-token/access-token.guard';
 import { AuthenticationGuard } from './auth/guard/authentication/authentication.guard';
 import { DataResponseInterceptor } from './common/interceptors/data-response/data-response.interceptor';
+import { UploadsModule } from './uploads/uploads.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 const env = process.env.NODE_ENV;
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'attachment'), // Path to your "attachment" folder
+      serveRoot: '/attachment',
+    }),
     UsersModule,
     PostsModule,
     AuthModule,
@@ -48,6 +55,7 @@ const env = process.env.NODE_ENV;
     PaginationModule,
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [
