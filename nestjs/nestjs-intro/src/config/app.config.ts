@@ -6,4 +6,7 @@ export default registerAs('appConfig', () => ({
   uploadPath: process.env.UPLOAD_FILE_PATH || 'development',
   uploadPublicPath: process.env.PUBLIC_UPLOAD_FILE_PATH || 'localhost:3000',
   publicDomain: process.env.PUBLIC_DOMIN || 'localhost:3000',
+  mailHost: process.env.SMTP_HOST,
+  smtpUsername: process.env.SMTP_USERNAME,
+  smtpPassword: process.env.SMTP_PASSWORD,
 }));

@@ -20,6 +20,7 @@ import { DataResponseInterceptor } from './common/interceptors/data-response/dat
 import { UploadsModule } from './uploads/uploads.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { MailModule } from './mail/mail.module';
 
 const env = process.env.NODE_ENV;
 @Module({
@@ -56,6 +57,7 @@ const env = process.env.NODE_ENV;
     ConfigModule.forFeature(jwtConfig),
     JwtModule.registerAsync(jwtConfig.asProvider()),
     UploadsModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [
