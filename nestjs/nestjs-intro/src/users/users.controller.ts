@@ -69,6 +69,7 @@ export class UsersController {
   }
 
   @Post()
+  @Auth(AuthType.None)
   @UseInterceptors(ClassSerializerInterceptor)
   public createUser(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);

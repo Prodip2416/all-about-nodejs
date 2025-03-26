@@ -21,6 +21,9 @@ export class UploadsService {
     private uploadsRepository: Repository<Upload>,
   ) {}
   public async uploadFile(file: Express.Multer.File) {
+    if(!file) {
+      throw new BadRequestException('No file uploaded');
+    }
     if (
       !['image/gif', 'image/jpeg', 'image/jpg', 'image/png'].includes(
         file.mimetype,
