@@ -4,6 +4,7 @@ import { AuthService } from 'src/auth/providers/auth.service';
 import { Repository } from 'typeorm';
 import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
@@ -13,6 +14,7 @@ export class UserService {
 
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    private configService: ConfigService,
   ) {}
 
   async createUser(createUserDTO: CreateUserDTO) {
@@ -27,6 +29,8 @@ export class UserService {
   }
 
   findAll() {
+    const secretKey = this.configService.get<string>('SECRET_KEY');
+    console.log('find all users', secretKey );
     return [
       {
         firstName: 'Bob',
@@ -49,16 +53,9 @@ export class UserService {
     ];
   }
 
-  findOneByUserId(userId: string) {
-    if (userId) {
-      return {
-        id: 123,
-        firstName: 'Todd',
-        lastName: 'roy',
-        email: 'todd@gmail.com',
-      };
-    } else {
-      return null;
-    }
+  public async findOneById(userId: number) {
+   return await this.userRepository.findOne({
+      where: { id: userId },
+    });
   }
 }

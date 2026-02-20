@@ -1,15 +1,18 @@
 import { UserService } from 'src/users/providers/user.service';
-import { Injectable } from '@nestjs/common';
-import { DeepPartial, Repository } from 'typeorm';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { CreatePostDto } from '../dto/create-posts.dto';
+import { TagsService } from 'src/tags/providers/tags.service';
+import { PatchPostDto } from '../dto/patch-post.dto';
 
 @Injectable()
 export class PostsService {
   constructor(
     private readonly usersService: UserService,
+    private readonly tagService: TagsService,
     @InjectRepository(Post)
     private readonly postsRepository: Repository<Post>,
     @InjectRepository(MetaOption)
@@ -20,9 +23,17 @@ export class PostsService {
    * Method to create a new post
    */
   public async create(createPostDto: CreatePostDto) {
+    let author = await this.usersService.findOneById(createPostDto.authorId);
+    let tags: any = [];
+    if (createPostDto.tags) {
+      tags = await this.tagService.findMultipleTags(createPostDto.tags);
+    }
+
     // Create the post
-    const post = this.postsRepository.create({
-      ...(createPostDto as DeepPartial<Post>),
+    let post = this.postsRepository.create({
+      ...createPostDto,
+      author: author!,
+      tags: tags,
     });
 
     return await this.postsRepository.save(post);
@@ -38,5 +49,32 @@ export class PostsService {
     await this.postsRepository.delete(id);
 
     return { deleted: true, id };
+  }
+
+  public async update(patchPostDto: PatchPostDto) {
+    // Find new tags
+    let tags: any = [];
+    if (patchPostDto.tags) {
+      tags = await this.tagService.findMultipleTags(patchPostDto.tags);
+    }
+
+    // Update the post
+    if (!patchPostDto.id) {
+      throw new NotFoundException(`Post id is required`);
+    }
+    let post = await this.postsRepository.findOneBy({
+      id: patchPostDto.id,
+    });
+    
+    if (!post) {
+      throw new NotFoundException(`Post with id ${patchPostDto.id} not found`);
+    }
+
+    // Update the tags
+    if (tags.length > 0) {
+      post.tags = tags;
+    }
+
+    return await this.postsRepository.save(post);
   }
 }

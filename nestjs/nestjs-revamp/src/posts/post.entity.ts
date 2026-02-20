@@ -1,13 +1,18 @@
 import {
   Column,
   Entity,
-  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { MetaOption } from 'src/meta-options/meta-option.entity';
+import { User } from 'src/users/user.entity';
 import { postType } from './enum/postType.enum';
 import { postStatus } from './enum/postStatus.enum';
-import { MetaOption } from 'src/meta-options/meta-option.entity';
+import { Tag } from 'src/tags/tags.entity';
+
 
 @Entity()
 export class Post {
@@ -65,7 +70,7 @@ export class Post {
   featuredImageUrl?: string;
 
   @Column({
-    type: 'datetime',
+    type: 'timestamp', // 'datetime' in mysql
     nullable: true,
   })
   publishOn?: Date;
@@ -75,6 +80,15 @@ export class Post {
     eager: true,
   })
   metaOptions?: MetaOption;
-  // Work on these in lecture on relationships
-  tags?: string[];
+
+  @ManyToOne(() => User, (user) => user.post, {
+    eager: true,
+  })
+  author: User;
+
+  @ManyToMany(() => Tag, (tag) => tag.posts, {
+    eager: true,
+  })
+  @JoinTable()
+  tags?: Tag[];
 }
