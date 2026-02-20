@@ -20,42 +20,23 @@ export class PostsService {
    * Method to create a new post
    */
   public async create(createPostDto: CreatePostDto) {
-    // Create the metaOptions first if they exist
-    const metaOptions = createPostDto.metaOptions
-      ? this.metaOptionsRepository.create(createPostDto.metaOptions)
-      : null;
-
-    if (metaOptions) {
-      await this.metaOptionsRepository.save(metaOptions);
-    }
-
     // Create the post
     const post = this.postsRepository.create({
       ...(createPostDto as DeepPartial<Post>),
     });
 
-    // If meta options exist add them to post
-    if (metaOptions) {
-      post.metaOptions = metaOptions;
-    }
-
     return await this.postsRepository.save(post);
   }
 
-  public findAll() {
-    //   const user = this.usersService.findOneById(userId);
-    //   return [
-    //     {
-    //       user: user,
-    //       title: 'Test Tile',
-    //       content: 'Test Content',
-    //     },
-    //     {
-    //       user: user,
-    //       title: 'Test Tile 2',
-    //       content: 'Test Content 2',
-    //     },
-    //   ];
-    // }
+  public async findAll() {
+    return await this.postsRepository.find(); // eager true
+    //  return await this.postsRepository.find({ relations: ['metaOptions'] });
+  }
+
+  public async delete(id: number) {
+    // Find the post from the database
+    await this.postsRepository.delete(id);
+
+    return { deleted: true, id };
   }
 }
