@@ -1,1 +1,4 @@
-GET http://localhost:3000/posts/12
+@startDate = 2024-02-21
+@endDate = 2024-02-21
+GET http://localhost:3000/posts/?startdate={{startDate}}&enddate={{endDate}}
+&page=1&limit=50

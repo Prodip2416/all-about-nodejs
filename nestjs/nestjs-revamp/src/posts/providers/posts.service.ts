@@ -1,4 +1,4 @@
-import { UserService } from 'src/users/providers/user.service';
+import { UsersService } from 'src/users/providers/user.service';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
@@ -7,12 +7,15 @@ import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { CreatePostDto } from '../dto/create-posts.dto';
 import { TagsService } from 'src/tags/providers/tags.service';
 import { PatchPostDto } from '../dto/patch-post.dto';
+import { PaginationService } from 'src/common/pagination/providers/pagination.service';
+import { GetPostsQueryDto } from '../dto/get-posts.dto';
 
 @Injectable()
 export class PostsService {
   constructor(
-    private readonly usersService: UserService,
+    private readonly usersService: UsersService,
     private readonly tagService: TagsService,
+    private readonly paginationService: PaginationService,
     @InjectRepository(Post)
     private readonly postsRepository: Repository<Post>,
     @InjectRepository(MetaOption)
@@ -39,9 +42,19 @@ export class PostsService {
     return await this.postsRepository.save(post);
   }
 
-  public async findAll() {
-    return await this.postsRepository.find(); // eager true
-    //  return await this.postsRepository.find({ relations: ['metaOptions'] });
+  public async findAll(getPostsQueryDto: GetPostsQueryDto) {
+    // return await this.paginationService.paginateQuery(
+    //   { page: 1, limit: 50 },
+    //   this.postsRepository,
+    // );
+
+    const qb = this.postsRepository.createQueryBuilder('post');
+    // .where('post.isActive = :isActive', { isActive: true });
+
+    return this.paginationService.paginateQuery(
+      { page: getPostsQueryDto.page, limit: getPostsQueryDto.limit },
+      qb,
+    );
   }
 
   public async delete(id: number) {
@@ -65,7 +78,7 @@ export class PostsService {
     let post = await this.postsRepository.findOneBy({
       id: patchPostDto.id,
     });
-    
+
     if (!post) {
       throw new NotFoundException(`Post with id ${patchPostDto.id} not found`);
     }

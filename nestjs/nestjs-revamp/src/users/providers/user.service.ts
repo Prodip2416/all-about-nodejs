@@ -1,61 +1,103 @@
-import { CreateUserDTO } from './../dto/create-user.dto';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { AuthService } from 'src/auth/providers/auth.service';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ConfigService } from '@nestjs/config';
+import { ConfigType } from '@nestjs/config';
+import { CreateUserProvider } from './create-user.provider';
+import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { GetUsersQueryDto } from '../dto/get-user.dto';
 
+/**
+ * Controller class for '/users' API endpoint
+ */
 @Injectable()
-export class UserService {
+export class UsersService {
   constructor(
-    @Inject(forwardRef(() => AuthService))
-    private authService: AuthService,
-
+    /**
+     * Injecting usersRepository
+     */
     @InjectRepository(User)
-    private userRepository: Repository<User>,
-    private configService: ConfigService,
+    private usersRepository: Repository<User>,
+    /**
+     * Inject Create Users Provider
+     */
+    private readonly createUserProvider: CreateUserProvider,
+
+    /**
+     * Inject findOneUserByEmailProvider
+     */
+    private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
   ) {}
 
-  async createUser(createUserDTO: CreateUserDTO) {
-    // const exitUser = await this.userRepository.find({
-    //   where: { email: createUserDTO?.email },
-    // });
-
-    let newUser = this.userRepository.create(createUserDTO);
-    newUser = await this.userRepository.save(newUser);
-
-    return newUser;
+  /**
+   * Method to create a new user
+   */
+  public async createUser(createUserDto: CreateUserDto) {
+    return await this.createUserProvider.createUser(createUserDto);
   }
 
-  findAll() {
-    const secretKey = this.configService.get<string>('SECRET_KEY');
-    console.log('find all users', secretKey );
-    return [
+  /**
+   * Public method responsible for handling GET request for '/users' endpoint
+   */
+  public findAll(
+    getUserParamDto: GetUsersQueryDto,
+    limt: number,
+    page: number,
+  ) {
+    throw new HttpException(
       {
-        firstName: 'Bob',
-        lastName: 'Roy',
-        email: 'bob@gmail.com',
-        password: '123456',
+        status: HttpStatus.MOVED_PERMANENTLY,
+        error: 'The API endpoint does not exist',
+        fileName: 'users.service.ts',
+        lineNumber: 88,
       },
+      HttpStatus.MOVED_PERMANENTLY,
       {
-        firstName: 'Todd',
-        lastName: 'Roy',
-        email: 'todd@gmail.com',
-        password: '123456',
+        cause: new Error(),
+        description: 'Occured because the API endpoint was permanently moved',
       },
-      {
-        firstName: 'Boby',
-        lastName: 'Roy',
-        email: 'y@gmail.com',
-        password: '123456',
-      },
-    ];
+    );
   }
 
-  public async findOneById(userId: number) {
-   return await this.userRepository.findOne({
-      where: { id: userId },
-    });
+  /**
+   * Public method used to find one user using the ID of the user
+   */
+  public async findOneById(id: number) {
+    let user = undefined;
+
+    try {
+      user = await this.usersRepository.findOneBy({
+        id,
+      });
+    } catch (error) {
+      throw new RequestTimeoutException(
+        'Unable to process your request at the moment please try later',
+        {
+          description: 'Error connecting to the the datbase',
+        },
+      );
+    }
+
+    /**
+     * Handle the user does not exist
+     */
+    if (!user) {
+      throw new BadRequestException('The user id does not exist');
+    }
+
+    return user;
+  }
+
+  // Finds one user by email
+  public async findOneByEmail(email: string) {
+    return await this.findOneUserByEmailProvider.findOneByEmail(email);
   }
 }

@@ -3,24 +3,36 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Matches,
   MaxLength,
+  MinLength,
 } from 'class-validator';
 
-export class CreateUserDTO {
-  @IsNotEmpty()
+export class CreateUserDto {
   @IsString()
-  @MaxLength(200)
+  @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(96)
   firstName: string;
 
-  @IsOptional()
   @IsString()
-  lastName: string;
+  @IsOptional()
+  @MinLength(3)
+  @MaxLength(96)
+  lastName?: string;
 
-  @IsNotEmpty()
   @IsEmail()
+  @IsNotEmpty()
+  @MaxLength(96)
   email: string;
 
-  @IsNotEmpty()
   @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(96)
+  @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/, {
+    message:
+      'Minimum eight characters, at least one letter, one number and one special character',
+  })
   password: string;
 }

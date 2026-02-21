@@ -7,6 +7,7 @@ import { Post } from './post.entity';
 import { User } from 'src/users/user.entity';
 import { MetaOption } from 'src/meta-options/meta-option.entity';
 import { TagsModule } from 'src/tags/tags.module';
+import { PaginationModule } from 'src/common/pagination/pagination.module';
 
 @Module({
   controllers: [PostsController],
@@ -14,6 +15,7 @@ import { TagsModule } from 'src/tags/tags.module';
   imports: [
     UsersModule,
     TagsModule,
+    PaginationModule,
     TypeOrmModule.forFeature([Post, User, MetaOption]),
   ],
 })
