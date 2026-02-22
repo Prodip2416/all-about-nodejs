@@ -13,6 +13,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PatchUserDto } from './dto/patch-user.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
+import type { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
 
 @Controller('users')
 export class UsersController {
@@ -25,7 +27,9 @@ export class UsersController {
   public getUsers(
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @ActiveUser() activeUser: ActiveUserData,
   ) {
+    console.log('Active User:::', activeUser);
     return this.usersService.findAll(limit, page);
   }
 
