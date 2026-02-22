@@ -2,7 +2,7 @@ POST http://localhost:3000/tags/create
 Content-Type: application/json
 
 {
-  "name": "vue",
-  "slug": "vue",
+  "name": "Vue",
+  "slug": "uve",
   "description": "All posts about vue"
 }

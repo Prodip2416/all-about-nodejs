@@ -3,13 +3,12 @@ import {
   Inject,
   Injectable,
   RequestTimeoutException,
-  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create-user.dto';
-import { HashingProvider } from 'src/auth/providers/hashing.provider';
+import { HashingProvider } from 'src/auth/hashing/providers/hashing.provider';
 
 @Injectable()
 export class CreateUserProvider {
@@ -23,7 +22,7 @@ export class CreateUserProvider {
     /**
      * Inject BCrypt Provider
      */
-    @Inject(forwardRef(() => HashingProvider))
+    @Inject(HashingProvider)
     private readonly hashingProvider: HashingProvider,
   ) {}
 

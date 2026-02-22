@@ -73,7 +73,7 @@ export class PaginationService {
     const totalPages = Math.ceil(totalItems / limit);
     const nextPage = page === totalPages ? page : page + 1;
     const previousPage = page === 1 ? page : page - 1;
-    let finalResponse = {
+    const finalResponse = {
       data: results,
       meta: {
         itemsPerPage: limit,

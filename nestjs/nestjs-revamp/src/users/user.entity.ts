@@ -31,5 +31,5 @@ export class User {
   password: string;
 
   @OneToMany(() => Post, (post) => post.author)
-  post:Post[]
+  post: Post[];
 }

@@ -16,4 +16,3 @@ export class GetUsersQueryDto extends IntersectionType(
   PaginationQueryDto,
   GetBaseUserDto,
 ) {}
-

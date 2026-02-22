@@ -14,6 +14,7 @@ import { CreateUserProvider } from './create-user.provider';
 import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { GetUsersQueryDto } from '../dto/get-user.dto';
+import { PaginationService } from 'src/common/pagination/providers/pagination.service';
 
 /**
  * Controller class for '/users' API endpoint
@@ -35,6 +36,7 @@ export class UsersService {
      * Inject findOneUserByEmailProvider
      */
     private readonly findOneUserByEmailProvider: FindOneUserByEmailProvider,
+    private readonly paginationService: PaginationService,
   ) {}
 
   /**
@@ -47,23 +49,14 @@ export class UsersService {
   /**
    * Public method responsible for handling GET request for '/users' endpoint
    */
-  public findAll(
-    getUserParamDto: GetUsersQueryDto,
-    limt: number,
-    page: number,
-  ) {
-    throw new HttpException(
-      {
-        status: HttpStatus.MOVED_PERMANENTLY,
-        error: 'The API endpoint does not exist',
-        fileName: 'users.service.ts',
-        lineNumber: 88,
-      },
-      HttpStatus.MOVED_PERMANENTLY,
-      {
-        cause: new Error(),
-        description: 'Occured because the API endpoint was permanently moved',
-      },
+  public findAll(limit: number, page: number) {
+    const qb = this.usersRepository
+      .createQueryBuilder('user')
+      .select(['user.id', 'user.firstName', 'user.lastName', 'user.email']);
+
+    return this.paginationService.paginateQuery(
+      { page: page, limit: limit },
+      qb,
     );
   }
 

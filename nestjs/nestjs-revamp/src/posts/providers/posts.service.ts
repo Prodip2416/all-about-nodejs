@@ -1,5 +1,9 @@
 import { UsersService } from 'src/users/providers/user.service';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Post } from '../post.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -26,14 +30,22 @@ export class PostsService {
    * Method to create a new post
    */
   public async create(createPostDto: CreatePostDto) {
-    let author = await this.usersService.findOneById(createPostDto.authorId);
+    const isSLUGExist = await this.postsRepository.find({
+      where: { slug: createPostDto.slug },
+    });
+    if (isSLUGExist) {
+      throw new BadRequestException(
+        'This slug already there. Try another one...',
+      );
+    }
+    const author = await this.usersService.findOneById(createPostDto.authorId);
     let tags: any = [];
     if (createPostDto.tags) {
       tags = await this.tagService.findMultipleTags(createPostDto.tags);
     }
 
     // Create the post
-    let post = this.postsRepository.create({
+    const post = this.postsRepository.create({
       ...createPostDto,
       author: author!,
       tags: tags,
@@ -43,13 +55,11 @@ export class PostsService {
   }
 
   public async findAll(getPostsQueryDto: GetPostsQueryDto) {
-    // return await this.paginationService.paginateQuery(
-    //   { page: 1, limit: 50 },
-    //   this.postsRepository,
-    // );
-
-    const qb = this.postsRepository.createQueryBuilder('post');
-    // .where('post.isActive = :isActive', { isActive: true });
+    const qb = this.postsRepository
+      .createQueryBuilder('post')
+      .leftJoinAndSelect('post.metaOptions', 'metaOptions')
+      .leftJoinAndSelect('post.author', 'author')
+      .leftJoinAndSelect('post.tags', 'tags');
 
     return this.paginationService.paginateQuery(
       { page: getPostsQueryDto.page, limit: getPostsQueryDto.limit },
@@ -75,7 +85,7 @@ export class PostsService {
     if (!patchPostDto.id) {
       throw new NotFoundException(`Post id is required`);
     }
-    let post = await this.postsRepository.findOneBy({
+    const post = await this.postsRepository.findOneBy({
       id: patchPostDto.id,
     });
 

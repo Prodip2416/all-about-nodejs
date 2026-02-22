@@ -1,24 +1,18 @@
 import {
   Controller,
-  Delete,
   Get,
-  Param,
   Patch,
   Post,
-  Put,
   Query,
   Body,
-  Headers,
-  Ip,
   ParseIntPipe,
   DefaultValuePipe,
-  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './providers/user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PatchUserDto } from './dto/patch-user.dto';
-import { GetUsersParamDto } from './dto/get-users-param.dto';
-import { GetUsersQueryDto } from './dto/get-user.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
 
 @Controller('users')
 export class UsersController {
@@ -27,16 +21,16 @@ export class UsersController {
     private readonly usersService: UsersService,
   ) {}
 
-  @Get('/:id')
+  @Get('')
   public getUsers(
-    @Param() getUsersQueryDto: GetUsersQueryDto,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
   ) {
-    return this.usersService.findAll(getUsersQueryDto, limit, page);
+    return this.usersService.findAll(limit, page);
   }
 
   @Post()
+  @Auth(AuthType.None)
   public createUsers(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
   }

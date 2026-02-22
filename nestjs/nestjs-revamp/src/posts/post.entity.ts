@@ -13,7 +13,6 @@ import { postType } from './enum/postType.enum';
 import { postStatus } from './enum/postStatus.enum';
 import { Tag } from 'src/tags/tags.entity';
 
-
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
@@ -77,18 +76,13 @@ export class Post {
 
   @OneToOne(() => MetaOption, (metaOptions) => metaOptions.post, {
     cascade: true,
-    eager: true,
   })
   metaOptions?: MetaOption;
 
-  @ManyToOne(() => User, (user) => user.post, {
-    eager: true,
-  })
+  @ManyToOne(() => User, (user) => user.post)
   author: User;
 
-  @ManyToMany(() => Tag, (tag) => tag.posts, {
-    eager: true,
-  })
+  @ManyToMany(() => Tag, (tag) => tag.posts)
   @JoinTable()
   tags?: Tag[];
 }
