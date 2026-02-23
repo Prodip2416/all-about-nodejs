@@ -7,11 +7,11 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { MetaOption } from 'src/meta-options/meta-option.entity';
-import { User } from 'src/users/user.entity';
+import { MetaOption } from '../meta-options/meta-option.entity';
+import { User } from '../users/user.entity';
 import { postType } from './enum/postType.enum';
 import { postStatus } from './enum/postStatus.enum';
-import { Tag } from 'src/tags/tags.entity';
+import { Tag } from '../tags/tags.entity';
 
 @Entity()
 export class Post {

@@ -1,6 +1,6 @@
 import { IntersectionType } from '@nestjs/mapped-types';
 import { IsDate, IsInt, IsOptional } from 'class-validator';
-import { PaginationQueryDto } from 'src/common/pagination/dtos/pagination-query.dto';
+import { PaginationQueryDto } from '../../common/pagination/dtos/pagination-query.dto';
 
 export class GetBaseUserDto {
   @IsOptional()

@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { PostsController } from './posts.controller';
 import { PostsService } from './providers/posts.service';
-import { UsersModule } from 'src/users/users.module';
+import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Post } from './post.entity';
-import { User } from 'src/users/user.entity';
-import { MetaOption } from 'src/meta-options/meta-option.entity';
-import { TagsModule } from 'src/tags/tags.module';
-import { PaginationModule } from 'src/common/pagination/pagination.module';
+import { User } from '../users/user.entity';
+import { MetaOption } from '../meta-options/meta-option.entity';
+import { TagsModule } from '../tags/tags.module';
+import { PaginationModule } from '../common/pagination/pagination.module';
 
 @Module({
   controllers: [PostsController],

@@ -1,30 +1,26 @@
 import {
-  Inject,
   Injectable,
   RequestTimeoutException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { SignInDto } from '../dtos/signin.dto';
+import { GenerateTokensProvider } from './generate-tokens.provider';
+import { UsersService } from '../../users/providers/user.service';
 import { HashingProvider } from '../hashing/providers/hashing.provider';
-import { UsersService } from 'src/users/providers/user.service';
-import { JwtService } from '@nestjs/jwt';
-import type { ConfigType } from '@nestjs/config';
-import jwtConfig from '../config/jwt.config';
 
 @Injectable()
 export class SignInProvider {
   constructor(
     // Injecting UserService
-    @Inject(UsersService)
+    // @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+
     private readonly hashingProvider: HashingProvider,
-    private readonly jwtService: JwtService,
-    @Inject(jwtConfig.KEY)
-    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
+
+    private readonly generateTokensProvider: GenerateTokensProvider,
   ) {}
 
   public async signIn(signInDto: SignInDto) {
-    console.log(signInDto);
     // find user by email ID
     const user = await this.usersService.findOneByEmail(signInDto.email);
     // Throw exception if user is not found
@@ -48,21 +44,7 @@ export class SignInProvider {
       throw new UnauthorizedException('Password does not match');
     }
 
-    //create access token
-    const accessToken = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        email: user.email,
-      },
-      {
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-        secret: this.jwtConfiguration.secret,
-        expiresIn: this.jwtConfiguration.accessTokenTtl,
-      },
-    );
-
-    // Send confirmation
-    return { accessToken };
+    // Generate access token
+    return await this.generateTokensProvider.generateTokens(user);
   }
 }

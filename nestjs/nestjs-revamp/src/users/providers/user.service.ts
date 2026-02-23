@@ -14,7 +14,7 @@ import { CreateUserProvider } from './create-user.provider';
 import { FindOneUserByEmailProvider } from './find-one-user-by-email.provider';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { GetUsersQueryDto } from '../dto/get-user.dto';
-import { PaginationService } from 'src/common/pagination/providers/pagination.service';
+import { PaginationService } from '../../common/pagination/providers/pagination.service';
 
 /**
  * Controller class for '/users' API endpoint

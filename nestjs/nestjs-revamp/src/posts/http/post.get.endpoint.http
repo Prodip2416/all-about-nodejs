@@ -2,3 +2,4 @@
 @endDate = 2024-02-21
 GET http://localhost:3000/posts/?startdate={{startDate}}&enddate={{endDate}}
 &page=1&limit=50
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsImVtYWlsIjoidG9kMUBnbWFpbC5jb20iLCJpYXQiOjE3NzE4NTE3MDQsImV4cCI6MTc3MTg1NTMwNCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3QifQ.cGTX_NhWYgHkukIt7FVZCUOuUdUnGlTCNoE_Dhz3-Yc

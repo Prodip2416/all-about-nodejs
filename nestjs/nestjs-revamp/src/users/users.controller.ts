@@ -7,14 +7,16 @@ import {
   Body,
   ParseIntPipe,
   DefaultValuePipe,
+  UseInterceptors,
+  ClassSerializerInterceptor,
 } from '@nestjs/common';
 import { UsersService } from './providers/user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PatchUserDto } from './dto/patch-user.dto';
-import { Auth } from 'src/auth/decorators/auth.decorator';
-import { AuthType } from 'src/auth/enums/auth-type.enum';
-import { ActiveUser } from 'src/auth/decorators/active-user.decorator';
-import type { ActiveUserData } from 'src/auth/interfaces/active-user-data.interface';
+import { Auth } from '../auth/decorators/auth.decorator';
+import { AuthType } from '../auth/enums/auth-type.enum';
+import { ActiveUser } from '../auth/decorators/active-user.decorator';
+import type { ActiveUserData } from '../auth/interfaces/active-user-data.interface';
 
 @Controller('users')
 export class UsersController {
@@ -29,12 +31,13 @@ export class UsersController {
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @ActiveUser() activeUser: ActiveUserData,
   ) {
-    console.log('Active User:::', activeUser);
+    // console.log('Active User:::', activeUser);
     return this.usersService.findAll(limit, page);
   }
 
   @Post()
   @Auth(AuthType.None)
+  @UseInterceptors(ClassSerializerInterceptor)
   public createUsers(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
   }
