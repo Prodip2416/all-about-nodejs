@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Inter } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { ChartColumnBigIcon } from "lucide-react";
+import { ClerkProvider } from "@clerk/nextjs"; 
+import AuthButtons from "@/components/ui/auth-buttons";
+ 
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const poppins = Poppins({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-poppins",
   subsets: ["latin"],
 });
 
@@ -22,15 +20,20 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html
-      lang="en"
-      className={cn("h-full", "antialiased", geistSans.variable, geistMono.variable, "font-sans", inter.variable)}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${poppins.variable} antialiased`}>
+          <nav className="bg-primary p-4 text-white h-20 flex items-center justify-between">
+            <Link href="/" className="font-bold text-2xl flex gap-1 items-center">
+              <ChartColumnBigIcon className="text-lime-500" /> NextCash
+            </Link>
+            <AuthButtons /> 
+          </nav>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
